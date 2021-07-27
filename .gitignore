@@ -1,0 +1,11 @@
+
+# python
+.python-version
+__pycache__
+
+# pycharm
+.idea
+
+# data files
+*.jpg
+*.json

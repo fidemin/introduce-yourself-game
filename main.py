@@ -1,7 +1,10 @@
-from subprocess import call
 import json
+from subprocess import call
+from time import sleep
 
 from art import text2art
+
+from animation import Animator
 
 
 def clear_screen():
@@ -45,8 +48,24 @@ class Game:
 
     def prologue(self):
         clear_screen()
-        art = text2art(self._game_data['title'])
-        print(art)
+        art_str = text2art(self._game_data['title'])
+        animator = Animator(art_str, width=150, height=40)
+        delay = 1.0 / 10
+        moves = [
+            (-15, 10), (1, -1), (1, -2), (1, -3), (1, -4), (1, -5),
+            (1, 4), (1, 3), (1, 2), (1, 1), (1, 0), (1, -1), (1, -2), (1, -3), (1, -4),
+            (1, 3), (1, 2), (1, 1), (1, 0), (1, -1), (1, -2), (1, -3),
+            (1, 2), (1, 1), (1, 0), (1, -1), (1, -2),
+            (1, 1), (1, 0), (1, -1),
+        ]
+        for move in moves:
+            clear_screen()
+            animator.move(move[0], move[1])
+            print(animator.to_string())
+            sleep(delay)
+        input()
+
+        clear_screen()
         name = self._game_data["name"]
         num_of_questions = len(self._game_data["questions"])
         hp = 50
