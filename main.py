@@ -1,5 +1,4 @@
 from subprocess import call
-from time import sleep
 import json
 
 from art import text2art
@@ -15,23 +14,28 @@ def import_game_data(file_path: str) -> dict:
 
 
 class User:
-    def __init__(self):
-        self.name = None
-        self.hp = 50
+    def __init__(self, name, hp):
+        self.name = name
+        self._init_hp = hp
+        self.hp = hp
 
     def lose_hp(self, amount):
         self.hp = self.hp - amount
         print(f'체력이 {amount}만큼 떨어졌습니다.')
 
     def print_status(self):
-        print(f'{self.name} 님 현재 체력: {self.hp}')
+        print(f'{self.name} 님 체력: {self.hp}', end=' ')
+        full_hp_bar_length = int(self._init_hp / 2)
+        hp_bar_length = int(self.hp / 2)
+        hp_bar = '[' + '=' * hp_bar_length + ' ' * (full_hp_bar_length - hp_bar_length) + ']'
+        print(hp_bar)
         print('-----------------------------------------')
         print()
 
 
 class Game:
-    def __init__(self, user: User, game_data: dict):
-        self._user = user
+    def __init__(self, game_data: dict):
+        self._user = None
         self._game_data = game_data
 
     def start(self):
@@ -43,11 +47,16 @@ class Game:
         clear_screen()
         art = text2art(self._game_data['title'])
         print(art)
-        for content in self._game_data['prologue']['contents']:
-            print(content)
+        name = self._game_data["name"]
+        num_of_questions = len(self._game_data["questions"])
+        hp = 50
+        print(f'이 게임은 {name}의 대한 {num_of_questions}개의 문제를 맞추는 게임입니다.')
+        print(f'여러분은 {hp}의 체력을 가지며, 한 문제를 틀릴 때 마다 10점씩 에너지가 깎이게 됩니다.')
+        print('우리 함께 여행을 떠나볼까요?')
+        print('이름을 입력하세요!')
         username = input('>> ')
-        self._user.name = username
-        print(f'안녕하세요, {username}님! 저와 함께 민윤홍의 인생에 대한 여행을 떠나시죠!')
+        self._user = User(username, hp)
+        print(f'안녕하세요, {username}님! 저와 함께 {name}의 인생에 대한 여행을 떠나시죠!')
         print('이제 게임을 시작합니다! 엔터를 누르세요.')
         input()
 
@@ -98,7 +107,6 @@ class Game:
 
 
 if __name__ == '__main__':
-    user = User()
     game_data = import_game_data('./game_data.json')
-    game = Game(user, game_data)
+    game = Game(game_data)
     game.start()
