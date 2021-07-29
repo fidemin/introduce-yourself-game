@@ -1,5 +1,6 @@
 import json
 from subprocess import call
+import subprocess
 from time import sleep
 
 from art import text2art
@@ -10,6 +11,10 @@ from asciiview import AsciiView
 
 def clear_screen():
     call('clear')
+
+
+def print_image(file_name):
+    subprocess.run(['bash', 'imgcat.sh', file_name])
 
 
 def import_game_data(file_path: str) -> dict:
@@ -71,8 +76,6 @@ class Game:
         input()
 
     def prologue(self):
-
-
         clear_screen()
         name = self._game_data["name"]
         num_of_questions = len(self._game_data["questions"])
@@ -131,10 +134,22 @@ class Game:
                 for content in contents:
                     print(content)
             elif explanation_type == 'image':
-                paths = explanation['paths']
-                for path in paths:
+                path = explanation['path']
+                clear_screen()
+                print_image(path)
+            elif explanation_type == 'art':
+                art_str = text2art(explanation['text'])
+                animator = Animator(art_str, width=150, height=40)
+                delay = 1.0 / 20
+                moves = [
+                    (-5, -5), (10, 0), (-10, 10), (10, -5),
+                    (-5, -5), (10, 0), (-10, 10), (-5, -5),
+                ]
+                for move in moves:
                     clear_screen()
-                    print(AsciiView(path).convert(400, 0.43))
+                    animator.move(move[0], move[1])
+                    print(animator.to_string())
+                    sleep(delay)
             input()
 
 
