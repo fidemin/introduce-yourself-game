@@ -5,6 +5,7 @@ from time import sleep
 from art import text2art
 
 from animation import Animator
+from asciiview import AsciiView
 
 
 def clear_screen():
@@ -23,8 +24,11 @@ class User:
         self.hp = hp
 
     def lose_hp(self, amount):
-        self.hp = self.hp - amount
-        print(f'체력이 {amount}만큼 떨어졌습니다.')
+        initial_hp = self.hp
+        self.hp = initial_hp - amount
+        if self.hp <= 0:
+            self.hp = 0
+        print(f'체력이 {initial_hp - self.hp}만큼 떨어졌습니다.')
 
     def print_status(self):
         print(f'{self.name} 님 체력: {self.hp}', end=' ')
@@ -42,11 +46,12 @@ class Game:
         self._game_data = game_data
 
     def start(self):
+        self.game_logo()
         self.prologue()
         for question in self._game_data['questions']:
             self.go_question(question)
 
-    def prologue(self):
+    def game_logo(self):
         clear_screen()
         art_str = text2art(self._game_data['title'])
         animator = Animator(art_str, width=150, height=40)
@@ -65,10 +70,13 @@ class Game:
             sleep(delay)
         input()
 
+    def prologue(self):
+
+
         clear_screen()
         name = self._game_data["name"]
         num_of_questions = len(self._game_data["questions"])
-        hp = 50
+        hp = self._game_data['hp']
         print(f'이 게임은 {name}의 대한 {num_of_questions}개의 문제를 맞추는 게임입니다.')
         print(f'여러분은 {hp}의 체력을 가지며, 한 문제를 틀릴 때 마다 10점씩 에너지가 깎이게 됩니다.')
         print('우리 함께 여행을 떠나볼까요?')
@@ -118,11 +126,16 @@ class Game:
             clear_screen()
             self._user.print_status()
             explanation_type = explanation['type']
-            contents = explanation['contents']
             if explanation_type == 'text':
+                contents = explanation['contents']
                 for content in contents:
                     print(content)
-        input()
+            elif explanation_type == 'image':
+                paths = explanation['paths']
+                for path in paths:
+                    clear_screen()
+                    print(AsciiView(path).convert(400, 0.43))
+            input()
 
 
 if __name__ == '__main__':
