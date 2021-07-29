@@ -1,12 +1,13 @@
 import json
-from subprocess import call
 import subprocess
+from subprocess import call
 from time import sleep
+import os
+
 
 from art import text2art
 
 from animation import Animator
-from asciiview import AsciiView
 
 
 def clear_screen():
@@ -15,6 +16,14 @@ def clear_screen():
 
 def print_image(file_name):
     subprocess.run(['bash', 'imgcat.sh', file_name])
+
+
+def print_one_by_one(text):
+    delay = 1.0 / 20
+    for char in text:
+        os.write(1, char.encode('utf8'))
+        sleep(delay)
+    print('\r\n')
 
 
 def import_game_data(file_path: str) -> dict:
@@ -80,14 +89,14 @@ class Game:
         name = self._game_data["name"]
         num_of_questions = len(self._game_data["questions"])
         hp = self._game_data['hp']
-        print(f'이 게임은 {name}의 대한 {num_of_questions}개의 문제를 맞추는 게임입니다.')
-        print(f'여러분은 {hp}의 체력을 가지며, 한 문제를 틀릴 때 마다 10점씩 에너지가 깎이게 됩니다.')
-        print('우리 함께 여행을 떠나볼까요?')
-        print('이름을 입력하세요!')
+        print_one_by_one(f'이 게임은 {name}의 대한 {num_of_questions}개의 문제를 맞추는 게임입니다.')
+        print_one_by_one(f'당신은 {hp}의 체력을 가지며, 한 문제를 틀릴 때 마다 10점씩 에너지가 깎이게 됩니다.')
+        print_one_by_one('우리 함께 여행을 떠나볼까요?')
+        print_one_by_one('이름을 입력하세요!')
         username = input('>> ')
         self._user = User(username, hp)
-        print(f'안녕하세요, {username}님! 저와 함께 {name}의 인생에 대한 여행을 떠나시죠!')
-        print('이제 게임을 시작합니다! 엔터를 누르세요.')
+        print_one_by_one(f'안녕하세요, {username}님! 저와 함께 {name}의 인생에 대한 여행을 떠나시죠!')
+        print_one_by_one('이제 게임을 시작합니다! 엔터를 누르세요.')
         input()
 
     def go_question(self, question):
@@ -96,11 +105,11 @@ class Game:
 
         problem = question['problem']
         for p in problem:
-            print(p)
+            print_one_by_one(p)
         answer_options = question['answer_options']
         answer_length = len(answer_options)
         for i, option in enumerate(answer_options, 1):
-            print(f'{i}. {option}')
+            print_one_by_one(f'{i}. {option}')
 
         selected_int = 0
         while True:
@@ -118,11 +127,11 @@ class Game:
 
         answer = question['answer']
         if selected_int != answer:
-            print('정답이 틀렸습니다!')
-            print(f'정답은 {answer}. {answer_options[answer-1]} 입니다!')
+            print_one_by_one('정답이 틀렸습니다!')
+            print_one_by_one(f'정답은 {answer}. {answer_options[answer-1]} 입니다!')
             self._user.lose_hp(10)
         else:
-            print('정답입니다!')
+            print_one_by_one('정답입니다!')
         input()
 
         for explanation in question['explanations']:
@@ -132,7 +141,7 @@ class Game:
             if explanation_type == 'text':
                 contents = explanation['contents']
                 for content in contents:
-                    print(content)
+                    print_one_by_one(content)
             elif explanation_type == 'image':
                 path = explanation['path']
                 clear_screen()
