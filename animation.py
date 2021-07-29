@@ -1,9 +1,4 @@
 import math
-from subprocess import call
-
-
-def clear_screen():
-    call('clear')
 
 
 class Animator:
