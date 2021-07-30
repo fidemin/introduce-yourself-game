@@ -19,7 +19,7 @@ def print_image(file_name):
 
 
 def print_one_by_one(text):
-    delay = 1.0 / 20
+    delay = 1.0 / 30
     for char in text:
         os.write(1, char.encode('utf8'))
         sleep(delay)
@@ -64,6 +64,7 @@ class Game:
         self.prologue()
         for question in self._game_data['questions']:
             self.go_question(question)
+        self.end()
 
     def game_logo(self):
         clear_screen()
@@ -95,7 +96,7 @@ class Game:
         print_one_by_one('이름을 입력하세요!')
         username = input('>> ')
         self._user = User(username, hp)
-        print_one_by_one(f'안녕하세요, {username}님! 저와 함께 {name}의 인생에 대한 여행을 떠나시죠!')
+        print_one_by_one(f'안녕하세요, {username}님! 저와 함께 {name}의 모든것 대한 여행을 떠나시죠!')
         print_one_by_one('이제 게임을 시작합니다! 엔터를 누르세요.')
         input()
 
@@ -103,7 +104,7 @@ class Game:
         clear_screen()
         self._user.print_status()
 
-        problem = question['problem']
+        problem = ['문제. '] + question['problem']
         for p in problem:
             print_one_by_one(p)
         answer_options = question['answer_options']
@@ -151,8 +152,10 @@ class Game:
                 animator = Animator(art_str, width=150, height=40)
                 delay = 1.0 / 20
                 moves = [
-                    (-5, -5), (10, 0), (-10, 10), (10, -5),
-                    (-5, -5), (10, 0), (-10, 10), (-5, -5),
+                    (-20, 0),
+                    (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0),
+                    (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0),
+                    (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0), (1, 0),
                 ]
                 for move in moves:
                     clear_screen()
@@ -160,6 +163,17 @@ class Game:
                     print(animator.to_string())
                     sleep(delay)
             input()
+
+    def end(self):
+        art_str = text2art('The End')
+        animator = Animator(art_str, width=150, height=40)
+        animator.move(10, 5)
+        delay = 0.3
+        for i in range(20):
+            clear_screen()
+            sleep(delay - i * 0.02)
+            print(animator.to_string())
+            sleep(delay - i * 0.02)
 
 
 if __name__ == '__main__':
