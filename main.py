@@ -168,12 +168,13 @@ class Game:
         art_str = text2art('The End')
         animator = Animator(art_str, width=150, height=40)
         animator.move(10, 5)
-        delay = 0.3
+        delay = 0.4
         for i in range(20):
             clear_screen()
             sleep(delay - i * 0.02)
             print(animator.to_string())
             sleep(delay - i * 0.02)
+        input()
 
 
 if __name__ == '__main__':
